@@ -30,7 +30,7 @@
 ;; Tested on Emacs 24
 
 ;;; Changelog:
-;;  2012/08/11 port to helm 
+;;  2012/08/11 port to helm
 ;;
 ;;
 
@@ -46,7 +46,7 @@
 ;; Below are customizable option list:
 ;;
 ;;  `helm-c-moccur-helm-idle-delay'
-;;    helm-c-moccurが提供するコマンドでhelmが起動された際の`helm-idle-delay'の値
+;;    helm-c-moccurが提供するコマンドでhelmが起動された際の`helm-exit-idle-delay'の値
 ;;    default = nil
 ;;  `helm-c-moccur-push-mark-flag'
 ;;    non-nilならコマンド起動時に現在のポイントにマークをセットする
@@ -105,8 +105,8 @@
 
 
 (defcustom helm-c-moccur-helm-idle-delay nil
-  "helm-c-moccurが提供するコマンドでhelmが起動された際の`helm-idle-delay'の値
-nilなら`helm-idle-delay'の値を使う"
+  "helm-c-moccurが提供するコマンドでhelmが起動された際の`helm-exit-idle-delay'の値
+nilなら`helm-exit-idle-delay'の値を使う"
   :type '(choice (number)
                  (boolean))
   :group 'helm-c-moccur)
@@ -155,7 +155,7 @@ nilなら使用しない"
 
 (defcustom helm-c-moccur-preselect-current-line t
   "*Preselect current line in *helm moccur* buffer."
-  :type 'boolean  
+  :type 'boolean
   :group 'helm-c-moccur)
 
 ;;; variables
@@ -306,10 +306,10 @@ nilなら使用しない"
   `(let ((helm-buffer helm-c-moccur-buffer)
          (helm-sources ,sources)
          (helm-map helm-c-moccur-helm-map)
-         (helm-idle-delay (cond
+         (helm-exit-idle-delay (cond
                                ((integerp helm-c-moccur-helm-idle-delay)
                                 helm-c-moccur-helm-idle-delay)
-                               (t helm-idle-delay))))
+                               (t helm-exit-idle-delay))))
      (add-hook 'helm-update-hook 'helm-c-moccur-preselect-current-line-maybe)
      (add-hook 'helm-c-moccur-helm-after-update-hook 'helm-c-moccur-helm-try-execute-persistent-action)
      (unwind-protect
@@ -535,7 +535,7 @@ nilなら使用しない"
         ;; put face [Buffer:...] line
         (when helm-c-moccur-higligt-info-line-flag
           (helm-c-moccur-dmoccur-higligt-info-line))
-        
+
         (cl-loop initially (progn (goto-char (point-min))
                                   (forward-line 1))
                  while (re-search-forward re nil t)
@@ -550,23 +550,23 @@ nilなら使用しない"
   (helm-c-moccur-next-line-if-info-line)
 
   (let ((real-candidate (helm-get-selection)))
-  
+
     (multiple-value-bind (buffer file-path)
         (helm-c-moccur-get-info)    ;return (values buffer file)
       (when (and (stringp buffer)
                  (bufferp (get-buffer buffer))
                  (stringp file-path)
                  (file-readable-p file-path))
-        
+
         (find-file file-path)
-      
+
         (helm-c-moccur-widen-if-need)
 
         (let ((line-number (string-to-number real-candidate)))
           (when (and (numberp line-number)
                      (not (= line-number 0)))
             (goto-line line-number)
-      
+
             (recenter helm-c-moccur-recenter-count)
             (when (overlayp helm-c-moccur-current-line-overlay)
               (move-overlay helm-c-moccur-current-line-overlay
@@ -594,7 +594,7 @@ nilなら使用しない"
     (match . (identity))
     (requires-pattern . 5)
     (init . helm-c-moccur-initialize)
-    (cleanup . helm-c-moccur-clean-up)    
+    (cleanup . helm-c-moccur-clean-up)
     (delayed)
     (volatile)))
 
@@ -632,7 +632,7 @@ nilなら使用しない"
     (match . (identity))
     (requires-pattern . 3)
     (init . helm-c-moccur-initialize)
-    (cleanup . helm-c-moccur-clean-up)    
+    (cleanup . helm-c-moccur-clean-up)
     (delayed)
     (volatile)))
 
