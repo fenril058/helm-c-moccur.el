@@ -418,8 +418,9 @@ nilなら使用しない"
 (defun helm-c-moccur-occur-by-moccur-scraper ()
   (when (buffer-live-p moccur-mocur-buffer)
     (with-current-buffer moccur-mocur-buffer
-      (let* ((buf (buffer-substring (point-min) (point-max)))
-             (lines (delete "" (cl-subseq (split-string buf "\n") 3))))
+      (let* ((buf (split-string (buffer-substring (point-min) (point-max)) "\n"))
+             (l (length buf))
+             (lines (delete "" (cl-subseq buf (if (>= l 3) 3 l)))))
         lines))))
 
 (defun helm-c-moccur-occur-by-moccur-get-candidates ()
